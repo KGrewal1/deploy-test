@@ -25,10 +25,11 @@ jobs:
           override: true
 
       - name: Build documentation
-        uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --verbose --no-deps --all-features
+        run: RUSTDOCFLAGS="--html-in-header katex-header.html" cargo doc --no-deps
+        # uses: actions-rs/cargo@v1
+        # with:
+        #   command: doc
+        #   args: --verbose --no-deps --all-features
 
       - name: Finalize documentation
         run: |
