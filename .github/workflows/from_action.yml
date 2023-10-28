@@ -1,4 +1,4 @@
-name: Documentation
+name: DeployAndBuild
 
 on:
   push:
