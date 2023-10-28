@@ -2,7 +2,7 @@
 //!
 //! $x = y$
 
-/// my finction
+/// my function is
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
