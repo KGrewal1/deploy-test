@@ -51,14 +51,8 @@ jobs:
       - name: Upload as artifact
         uses: actions/upload-artifact@v2
         with:
+          name: github-pages
           path: target/doc
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-        #   ACCESS_TOKEN: ${{ secrets.GH_PAT }}
-        #   BRANCH: gh-pages
-          folder: target/doc
 
   deploy:
     environment:
