@@ -1,47 +1,41 @@
-name: Documentation
-
 on:
   push:
     branches:
       - master
+  pull_request:
+
+name: CI
 
 jobs:
-  docs:
-    permissions:
-        contents: write
-    name: Documentation
-    runs-on: ubuntu-latest
+  check:
+    name: Check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust: [stable]
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain
         with:
-          persist-credentials: false
+          toolchain: ${{ matrix.rust }}
+      - run: cargo check --workspace
 
-      - name: Install Rust
-        run: rustup install stable
-
-      - name: Build documentation
-        run: RUSTDOCFLAGS="--html-in-header katex-header.html" cargo doc --no-deps
-        # uses: actions-rs/cargo@v1
-        # with:
-        #   command: doc
-        #   args: --verbose --no-deps --all-features
-
-      - name: Finalize documentation
-        run: |
-          CRATE_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]' | cut -f2 -d"/")
-          echo "<meta http-equiv=\"refresh\" content=\"0; url=${CRATE_NAME/-/_}\">" > target/doc/index.html
-          touch target/doc/.nojekyll
-
-      - name: Upload as artifact
-        uses: actions/upload-artifact@v3
+  test:
+    name: Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        rust: [stable]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
         with:
-          name: Documentation
-          path: target/doc
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - uses: actions-rs/cargo@v1
         with:
-        #   ACCESS_TOKEN: ${{ secrets.GH_PAT }}
-        #   BRANCH: gh-pages
-          folder: target/doc
+          command: test
+          args: --workspace
